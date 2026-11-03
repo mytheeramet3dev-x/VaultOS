@@ -1,0 +1,33 @@
+{
+  "name": "vaultos-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "sdk",
+    "services/indexer",
+    "apps/web"
+  ],
+  "scripts": {
+    "build:programs": "cargo check --manifest-path programs/vaultos/Cargo.toml",
+    "test:rust": "cargo test --manifest-path programs/vaultos/Cargo.toml",
+    "build:sdk": "npm --prefix sdk run build",
+    "test:sdk": "npm --prefix sdk run test",
+    "build:indexer": "npm --prefix services/indexer run build",
+    "start:indexer": "npm --prefix services/indexer start",
+    "build:web": "npm --prefix apps/web run build",
+    "dev:web": "npm --prefix apps/web run dev",
+    "test:integration": "node --import ts-node/register/transpile-only --test tests/integration/full_lifecycle.test.ts",
+    "test:adversarial": "node --import ts-node/register/transpile-only --test tests/adversarial/security_invariants.test.ts",
+    "test:e2e": "node --import ts-node/register/transpile-only --test tests/e2e/end_to_end_indexer_flow.test.ts",
+    "test:all": "npm run test:rust && npm run test:sdk && npm run test:integration && npm run test:adversarial && npm run test:e2e",
+    "deploy:localnet": "bash scripts/setup_localnet.sh",
+    "deploy:devnet": "bash scripts/deploy_devnet.sh"
+  },
+  "devDependencies": {
+    "@solana/web3.js": "^1.98.0",
+    "@types/node": "^22.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.0"
+  }
+}

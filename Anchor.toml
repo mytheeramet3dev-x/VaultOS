@@ -1,0 +1,22 @@
+[toolchain]
+anchor_version = "1.1.2"
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.localnet]
+vaultos = "8crGeaqgPRAak8pvSf3YZpDovdTwUrCmfag3YdRM1iYw"
+
+[programs.devnet]
+vaultos = "8crGeaqgPRAak8pvSf3YZpDovdTwUrCmfag3YdRM1iYw"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "Localnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "npx ts-node tests/integration/full_lifecycle.test.ts"

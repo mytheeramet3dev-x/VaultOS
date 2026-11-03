@@ -1,0 +1,58 @@
+name: VaultOS CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  rust-checks:
+    name: Rust & Anchor Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Cargo Format Check
+        run: cargo fmt --all --manifest-path programs/vaultos/Cargo.toml -- --check
+
+      - name: Cargo Clippy Lint
+        run: cargo clippy --manifest-path programs/vaultos/Cargo.toml -- -D warnings
+
+      - name: Run Rust Unit & Integration Tests
+        run: cargo test --manifest-path programs/vaultos/Cargo.toml
+
+  typescript-checks:
+    name: TypeScript, SDK & Web Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build & Test SDK
+        run: |
+          npm --prefix sdk run build
+          npm --prefix sdk test
+
+      - name: Build Indexer
+        run: npm --prefix services/indexer run build
+
+      - name: Build Web Application
+        run: npm --prefix apps/web run build
+
+      - name: Run Integration, Adversarial & E2E Tests
+        run: |
+          node --import ts-node/register/transpile-only --test tests/integration/full_lifecycle.test.ts tests/adversarial/security_invariants.test.ts tests/e2e/end_to_end_indexer_flow.test.ts
